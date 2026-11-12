@@ -20,7 +20,8 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+    // The PostHog project key is public by design (it ships in browser code), so it has a fallback here.
+    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY || 'phc_A7AQUNuHDWgP92hxthbkLJE53fGP2VnVBM3EbGgW9tKy';
     const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com';
 
     if (key && !key.includes('phc_...')) {
@@ -28,7 +29,8 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
         posthog.init(key, {
           api_host: host,
           person_profiles: 'identified_only',
-          capture_pageview: false,
+          capture_pageview: 'history_change', // page views, including client-side navigation
+          capture_pageleave: true,
           loaded: () => {
             setIsReady(true);
           },
